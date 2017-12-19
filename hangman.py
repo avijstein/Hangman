@@ -1,4 +1,4 @@
-import os, sys
+import os, sys, random
 from time import sleep
 import numpy as np
 import pandas as pd
@@ -8,9 +8,32 @@ os.chdir('/Users/ajstein/Desktop/Real Life/Coding Projects/Hangman/')
 all_words = pd.read_table('./master_dict.txt', sep='\r', header=None, names=['words']) # read in data.
 all_words['words'] = all_words['words'].str.lower().drop_duplicates() # make sure there are no duplicates because of capitalization.
 
+
+
+# randomly picking target_word
+# test_words = []
+# for i in range(0,10):
+#     x = random.choice(all_words['words'])
+#     test_words.append(x)
+#
+# test_words.sort(key = lambda x: len(x))
+# print(test_words)
+
+
+
 # initializing the game.
 print('---- Initializing Game ----')
-target_word = 'dreamy'
+# target_word = 'butterfly'
+
+# asking for input and making sure it's in the dictionary.
+target_word = input('What word would you like to chose? ')
+while True:
+    if (target_word not in all_words['words'].values):
+        print("That's not a valid word, please try another.")
+        target_word = input('What word would you like to chose? ')
+    else:
+        break
+
 print("Your word is ", target_word.upper(), ", but the computer doesn't know that.", sep='')
 guessed_letters, wrongs = [], 0
 current_word = list('_'*len(target_word))
@@ -57,7 +80,7 @@ def play_game(df):
         wrongs += 1
          # testing losing scenarios.
         if wrongs > 7:
-            print('Failed! You guessed wrong 7 times.')
+            print('Failed! The computer guessed wrong 7 times.')
             print(''.join(current_word))
             sys.exit()
         # print('Wrong guess. So far: ', wrongs)
