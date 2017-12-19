@@ -1,26 +1,72 @@
-import os
+import os, sys
+from time import sleep
 import numpy as np
 import pandas as pd
 
 
 os.chdir('/Users/ajstein/Desktop/Real Life/Coding Projects/Hangman/')
-df = pd.read_table('./master_dict.txt', sep='\r', header=None, names=['words'])
-df['words'] = df['words'].str.lower().drop_duplicates()
+all_words = pd.read_table('./master_dict.txt', sep='\r', header=None, names=['words'])
+all_words['words'] = all_words['words'].str.lower().drop_duplicates()
 
-word_length = 8
-df = df.loc[df['words'].str.len() == word_length]
+print('---- Initializing Game ----')
+target_word = 'dreamy'
+print("Your word is ", target_word.upper(), ", but the computer doesn't know that.", sep='')
+guessed_letters, wrongs = [], 0
+current_word = list('_'*len(target_word))
+print('Current word: ', ''.join(current_word))
 
-df2 = df['words'].apply(lambda x: pd.Series(list(x))) # this is SLOW
+
+all_words = all_words.loc[all_words['words'].str.len() == len(target_word)]
+
+possible_words = all_words['words'].apply(lambda x: pd.Series(list(x))) # CHOKE POINT
 
 
-def letter_freq(df):
+def play_game(df):
+    global guessed_letters, current_word, target_word, wrongs
+    if (''.join(current_word) == ''.join(target_word)):
+        print('Success! Only took ', len(guessed_letters), ' turns with ', wrongs, ' wrong guesses!', sep = '')
+        print('Final word: ', (''.join(current_word)).upper())
+        sys.exit()
+
     new_df = df.apply(pd.value_counts).fillna(0)
     new_df['total'] = new_df.sum(axis = 1)
     new_df = new_df.sort_values(by = 'total', ascending = False)
-    return(new_df['total'].index)
+    # print('all options: ', list(new_df['total'].index))
+    options = new_df['total'].index
+    options = options[~options.isin(guessed_letters)]
+    # print('options: ', list(options))
+    # print('guessed letters: ', guessed_letters)
+    guess = options[0]
+    guessed_letters.append(guess)
+    # print('my guess: ', guess)
+
+    positions = [x for x, char in enumerate(target_word) if char == guess]
+    if positions == []:
+        wrongs += 1
+        if wrongs > 7:
+            print('Failed! You guessed wrong 7 times.')
+            print(''.join(current_word))
+            sys.exit()
+        # print('Wrong guess. So far: ', wrongs)
+        sleep(.3)
+        return(df)
+
+    for i in positions:
+        current_word[i] = guess
+        df = df.loc[df[i] == guess]
+    print('Current word: ', ''.join(current_word))
+    sleep(.5)
+    return(df)
 
 
-print(letter_freq(df2))
+
+while(True):
+    possible_words = play_game(possible_words)
+
+
+
+
+
 
 
 
