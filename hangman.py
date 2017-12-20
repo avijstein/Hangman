@@ -8,16 +8,15 @@ os.chdir('/Users/ajstein/Desktop/Real Life/Coding Projects/Hangman/')
 all_words = pd.read_table('./master_dict.txt', sep='\r', header=None, names=['words']) # read in data.
 all_words['words'] = all_words['words'].str.lower().drop_duplicates() # make sure there are no duplicates because of capitalization.
 
-
+# so not to overwrite it.
+many_words = all_words
 
 # randomly picking target_word
-# test_words = []
-# for i in range(0,10):
-#     x = random.choice(all_words['words'])
-#     test_words.append(x)
-#
-# test_words.sort(key = lambda x: len(x))
-# print(test_words)
+test_words = []
+for i in range(0,100):
+    x = random.choice(all_words['words'])
+    test_words.append(x)
+print(test_words)
 
 
 
@@ -26,24 +25,14 @@ print('---- Initializing Game ----')
 # target_word = 'butterfly'
 
 # asking for input and making sure it's in the dictionary.
-target_word = input('What word would you like to chose? ')
-while True:
-    if (target_word not in all_words['words'].values):
-        print("That's not a valid word, please try another.")
-        target_word = input('What word would you like to chose? ')
-    else:
-        break
 
-print("Your word is ", target_word.upper(), ", but the computer doesn't know that.", sep='')
-guessed_letters, wrongs = [], 0
-current_word = list('_'*len(target_word))
-print('Current word: ', ''.join(current_word))
-
-# reduces all words down to only words of the same length as target.
-# expands possible words into a dataframe containing one letter in each column.
-# expanding is very slow.
-all_words = all_words.loc[all_words['words'].str.len() == len(target_word)]
-possible_words = all_words['words'].apply(lambda x: pd.Series(list(x)))
+# target_word = input('What word would you like to choose? ')
+# while True:
+#     if (target_word not in all_words['words'].values):
+#         print("That's not a valid word, please try another.")
+#         target_word = input('What word would you like to choose? ')
+#     else:
+#         break
 
 
 def play_game(df):
@@ -52,12 +41,16 @@ def play_game(df):
     guesses it, and then evaluates the possibilities from there.
     """
     global guessed_letters, current_word, target_word, wrongs
+    global win_size, kill_switch
 
     # testing winning scenarios.
     if (''.join(current_word) == ''.join(target_word)):
         print('Success! Only took ', len(guessed_letters), ' turns with ', wrongs, ' wrong guesses!', sep = '')
         print('Final word: ', (''.join(current_word)).upper())
-        sys.exit()
+        win_size.append(wrongs)
+        # sys.exit()
+        kill_switch = 1
+        return
 
     # calculates frequency of each letter of all possible words.
     # finds the most likely (that hasn't been guessed already).
@@ -79,12 +72,12 @@ def play_game(df):
     if positions == []:
         wrongs += 1
          # testing losing scenarios.
-        if wrongs > 7:
-            print('Failed! The computer guessed wrong 7 times.')
+        if wrongs > 100:
+            print('Failed! The computer guessed wrong 100 times.')
             print(''.join(current_word))
             sys.exit()
         # print('Wrong guess. So far: ', wrongs)
-        sleep(.3)
+        # sleep(.3)
         return(df)
 
     # fills in any correct guesses.
@@ -93,13 +86,62 @@ def play_game(df):
         current_word[i] = guess
         df = df.loc[df[i] == guess]
     print('Current word: ', ''.join(current_word))
-    sleep(.5)
+    # sleep(.5)
     return(df)
+
+counter, kill_switch = 0, 0
+win_size = []
+for i in range(0,len(test_words)):
+    print('iteration: ', i, 'of ', len(test_words))
+    guessed_letters, wrongs = [], 0
+    target_word = test_words[i]
+    current_word = list('_'*len(target_word))
+    print('Current word: ', ''.join(current_word))
+
+    all_words = many_words.loc[many_words['words'].str.len() == len(target_word)]
+    possible_words = all_words['words'].apply(lambda x: pd.Series(list(x)))
+
+    while(kill_switch == 0):
+        possible_words = play_game(possible_words)
+    kill_switch = 0
+
+print('\r')
+print('--- STATS ----')
+win_size = sorted(win_size)
+print(win_size)
+print('n:', len(win_size))
+print('mean:', np.mean(win_size))
+print('st dev:', np.std(win_size))
+print('success rate:', len([num for num in win_size if num < 9])/ len(win_size))
+
+
+"""
+---- Stats ----
+n: 100
+mean: 2.76
+st dev: 2.43
+success rate: 95%
+conclusion: not bad at all
+"""
+
+# print("Your word is ", target_word.upper(), ", but the computer doesn't know that.", sep='')
+# guessed_letters, wrongs = [], 0
+# current_word = list('_'*len(target_word))
+# print('Current word: ', ''.join(current_word))
+
+# reduces all words down to only words of the same length as target.
+# expands possible words into a dataframe containing one letter in each column.
+# expanding is very slow.
+# all_words = all_words.loc[all_words['words'].str.len() == len(target_word)]
+# possible_words = all_words['words'].apply(lambda x: pd.Series(list(x)))
+
+
+
 
 
 # runs the game until it wins or loses.
-while(True):
-    possible_words = play_game(possible_words)
+# while(True):
+#     possible_words = play_game(possible_words)
 
 
 
