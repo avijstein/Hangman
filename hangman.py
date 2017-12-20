@@ -8,24 +8,11 @@ os.chdir('/Users/ajstein/Desktop/Real Life/Coding Projects/Hangman/')
 all_words = pd.read_table('./master_dict.txt', sep='\r', header=None, names=['words']) # read in data.
 all_words['words'] = all_words['words'].str.lower().drop_duplicates() # make sure there are no duplicates because of capitalization.
 
-# so not to overwrite it.
-# many_words = all_words
-
-# randomly picking target_word
-# test_words = []
-# for i in range(0,100):
-#     x = random.choice(all_words['words'])
-#     test_words.append(x)
-# print(test_words)
-
-
-
 # initializing the game.
 print('---- Initializing Game ----')
 # target_word = 'butterfly'
 
 # asking for input and making sure it's in the dictionary.
-
 target_word = input('What word would you like to choose? ')
 while True:
     if (target_word not in all_words['words'].values):
@@ -33,43 +20,6 @@ while True:
         target_word = input('What word would you like to choose? ')
     else:
         break
-
-
-# counter, kill_switch = 0, 0
-# win_size = []
-# for i in range(0,len(test_words)):
-#     print('iteration: ', i, 'of ', len(test_words))
-#     guessed_letters, wrongs = [], 0
-#     target_word = test_words[i]
-#     current_word = list('_'*len(target_word))
-#     print('Current word: ', ''.join(current_word))
-#
-#     all_words = many_words.loc[many_words['words'].str.len() == len(target_word)]
-#     possible_words = all_words['words'].apply(lambda x: pd.Series(list(x)))
-#
-#     while(kill_switch == 0):
-#         possible_words = play_game(possible_words)
-#     kill_switch = 0
-
-# print('\r')
-# print('--- STATS ----')
-# win_size = sorted(win_size)
-# print(win_size)
-# print('n:', len(win_size))
-# print('mean:', np.mean(win_size))
-# print('st dev:', np.std(win_size))
-# print('success rate:', len([num for num in win_size if num < 9])/ len(win_size))
-
-
-"""
----- Stats ----
-n: 100
-mean: 2.76
-st dev: 2.43
-success rate: 95%
-conclusion: not bad at all
----------------
-"""
 
 print("Your word is ", target_word.upper(), ", but the computer doesn't know that.", sep='')
 guessed_letters, wrongs = [], 0
@@ -88,16 +38,12 @@ def play_game(df):
     guesses it, and then evaluates the possibilities from there.
     """
     global guessed_letters, current_word, target_word, wrongs
-    # global win_size, kill_switch
 
     # testing winning scenarios.
     if (''.join(current_word) == ''.join(target_word)):
         print('Success! Only took ', len(guessed_letters), ' turns with ', wrongs, ' wrong guesses!', sep = '')
         print('Final word: ', (''.join(current_word)).upper())
-        # win_size.append(wrongs)
         sys.exit()
-        # kill_switch = 1
-        # return
 
     # calculates frequency of each letter of all possible words.
     # finds the most likely (that hasn't been guessed already).
@@ -141,13 +87,15 @@ while(True):
     possible_words = play_game(possible_words)
 
 
-
-
-
-
-
-
-
+"""
+---- Stats ----
+n: 100
+mean: 2.76
+st dev: 2.43
+success rate: 95%
+conclusion: not bad at all
+---------------
+"""
 
 
 # bottom
