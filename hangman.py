@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 # making sure everything is in the right directory.
-os.chdir('/Users/ajstein/Desktop/Real Life/Coding Projects/Hangman/')
+# os.chdir('/Users/ajstein/Desktop/Real Life/Coding Projects/Hangman/')
 all_words = pd.read_table('./master_dict.txt', sep='\r', header=None, names=['words']) # read in data.
 all_words['words'] = all_words['words'].str.lower().drop_duplicates() # make sure there are no duplicates because of capitalization.
 
