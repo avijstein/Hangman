@@ -6,16 +6,24 @@ import hangman as hm
 os.chdir('/Users/ajstein/Desktop/Real Life/Coding Projects/Hangman/')
 
 # this function brings in everything we need to run the variables from hangman in this space.
+hm.clear_log(False)
 # hm.load_game('ant')
 # print('-'*20)
 # hm.gogogo()
 
-# print(hm.all_words.head())
+# sys.exit()
 
-
+print('---- LOG TIME ----')
 # short = hm.all_words.iloc[0:5,0]
+# sys.exit()
 
+log = open('comm.log', 'r')
+loglist = []
+for line in log:
+    # print(line[:(len(line)-1)])
+    loglist.append(line[:(len(line)-1)])
 
+print(loglist)
 
 # for i in range(0,len(short)):
 #     print(short.iloc[i].upper())
@@ -37,10 +45,11 @@ def write_by_line(init_x, init_y, words):
 somewords = ['alpha', 'bravo', 'charlie', 'delta']
 
 t.speed(6)
-# write_by_line(-400, 300, somewords)
+write_by_line(-400, 300, loglist)
 
-# t.done()
+t.done()
 
+sys.exit()
 
 # the hangman drawing
 def draw_gallows():
@@ -57,8 +66,9 @@ def draw_gallows():
     t.setpos((200,0))
     t.penup()
 
-def draw_body(pieces):
+def draw_body(piece):
     def head():
+        t.penup()
         t.setpos((175, 225))
         t.pendown()
         t.circle(25)
@@ -111,15 +121,24 @@ def draw_body(pieces):
 
     t.speed(10)
     parts = ['head()', 'body()', 'arm1()', 'arm2()', 'leg1()', 'leg2()', 'frown()', 'deadeyes()']
-    for i in range(0,pieces):
-        eval(parts[i])
+    piece = piece - 1
+    # print(parts[piece])
+    eval(parts[piece])
 
 
 t.ht()
 draw_gallows()
-draw_body(8)
+# draw_body(wrongs)
 
 t.done()
+
+
+
+
+
+
+
+
 
 
 

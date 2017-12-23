@@ -2,8 +2,20 @@ import os, sys, random
 from time import sleep
 import numpy as np
 import pandas as pd
+import logging
 
 os.chdir('/Users/ajstein/Desktop/Real Life/Coding Projects/Hangman/')
+
+def clear_log(yes_or_no):
+    """
+    True or False. Gatekeeper whether to clear overwrite the log, or keep it for playback.
+    """
+    if yes_or_no:
+        filehandler_dbg = logging.FileHandler('comm.log', mode='w')
+        logging.basicConfig(filename='comm.log', level = logging.DEBUG, format = '')
+    else:
+        filehandler_dbg = logging.FileHandler('comm.log', mode='a')
+        logging.basicConfig(filename='comm.log', level = logging.DEBUG, format = '')
 
 def reading():
     """
@@ -37,9 +49,12 @@ def unfriendly(target_word):
     global all_words
     if (target_word not in all_words['words'].values):
         print("That's not a valid word, please try another and start again.")
+        logging.info("That's not a valid word, please try another and start again.")
         sys.exit()
     print('---- Initializing Game ----')
+    logging.info('---- Initializing Game ----')
     print("Your word is ", target_word.upper(), ", but the computer doesn't know that.", sep='')
+    logging.info("Your word is " + str(target_word.upper()) + ", but the computer doesn't know that.")
     return(target_word)
 
 def game_setup():
@@ -51,6 +66,7 @@ def game_setup():
     guessed_letters, wrongs = [], 0
     current_word = list('_'*len(target_word))
     print('Current word: ', ''.join(current_word))
+    logging.info('Current word: ' + str(''.join(current_word)))
     all_words = all_words.loc[all_words['words'].str.len() == len(target_word)]
     possible_words = all_words['words'].apply(lambda x: pd.Series(list(x)))
     return(possible_words)
@@ -66,6 +82,8 @@ def play_game(df):
     if (''.join(current_word) == ''.join(target_word)):
         print('Success! Only took ', len(guessed_letters), ' turns with ', wrongs, ' wrong guesses!', sep = '')
         print('Final word: ', (''.join(current_word)).upper())
+        logging.info('Success! Only took ' + str(len(guessed_letters)) + ' turns with ' + str(wrongs) + ' wrong guesses!')
+        logging.info('Final word: ' + str((''.join(current_word)).upper()))
         sys.exit()
 
     # calculates frequency of each letter of all possible words.
@@ -77,7 +95,8 @@ def play_game(df):
     # print('all options: ', list(new_df['total'].index))
     options = new_df['total'].index
     options = options[~options.isin(guessed_letters)]
-    # print('options: ', list(options))
+    # print('options: ', list(options)[0:5])
+    logging.info('Best Options: ' + str(list(options)[0:5]))
     # print('guessed letters: ', guessed_letters)
     guess = options[0]
     guessed_letters.append(guess)
@@ -91,6 +110,8 @@ def play_game(df):
         if wrongs > 100:
             print('Failed! The computer guessed wrong 100 times.')
             print(''.join(current_word))
+            logging.info('Failed! The computer guessed wrong 100 times.')
+            logging.info(str(''.join(current_word)))
             sys.exit()
         # print('Wrong guess. So far: ', wrongs)
         sleep(.3)
@@ -102,6 +123,7 @@ def play_game(df):
         current_word[i] = guess
         df = df.loc[df[i] == guess]
     print('Current word: ', ''.join(current_word))
+    logging.info('Current word: ' + str(''.join(current_word)))
     sleep(.5)
     return(df)
 
@@ -122,6 +144,7 @@ def load_game(my_word):
     target_word = unfriendly(my_word)
     possible_words = game_setup()
     print('The game is fully loaded.')
+    logging.info('The game is fully loaded.')
 
 def fullgameplay():
     """
@@ -139,10 +162,6 @@ def fullgameplay():
 if __name__ == '__main__':
     fullgameplay()
 
-
-# TODO: Clean up the FIXME you left earlier in the code.
-# TODO: (Re)comment out the code so you can not go insane later on.
-# TODO: Actually start playing with your turtles, now that you got your modules working.
 
 
 """
