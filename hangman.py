@@ -3,34 +3,43 @@ from time import sleep
 import numpy as np
 import pandas as pd
 
-# making sure everything is in the right directory.
-# os.chdir('/Users/ajstein/Desktop/Real Life/Coding Projects/Hangman/')
-all_words = pd.read_table('./master_dict.txt', sep='\r', header=None, names=['words']) # read in data.
-all_words['words'] = all_words['words'].str.lower().drop_duplicates() # make sure there are no duplicates because of capitalization.
+os.chdir('/Users/ajstein/Desktop/Real Life/Coding Projects/Hangman/')
 
-# initializing the game.
-print('---- Initializing Game ----')
-# target_word = 'butterfly'
+x = list(range(0,10))
 
-# asking for input and making sure it's in the dictionary.
-target_word = input('What word would you like to choose? ')
-while True:
-    if (target_word not in all_words['words'].values):
-        print("That's not a valid word, please try another.")
-        target_word = input('What word would you like to choose? ')
-    else:
-        break
+def reading():
+    all_words = pd.read_table('./master_dict.txt', sep='\r', header=None, names=['words']) # read in data.
+    all_words['words'] = all_words['words'].str.lower().drop_duplicates() # make sure there are no duplicates because of capitalization.
+    return(all_words)
 
-print("Your word is ", target_word.upper(), ", but the computer doesn't know that.", sep='')
-guessed_letters, wrongs = [], 0
-current_word = list('_'*len(target_word))
-print('Current word: ', ''.join(current_word))
+def friendly():
+    print('---- Initializing Game ----')
+    target_word = input('What word would you like to choose? ')
+    while True:
+        if (target_word not in all_words['words'].values):
+            print("That's not a valid word, please try another.")
+            target_word = input('What word would you like to choose? ')
+        else:
+            break
+    print("Your word is ", target_word.upper(), ", but the computer doesn't know that.", sep='')
+    return(target_word)
 
-# reduces all words down to only words of the same length as target.
-# expands possible words into a dataframe containing one letter in each column.
-# expanding is very slow.
-all_words = all_words.loc[all_words['words'].str.len() == len(target_word)]
-possible_words = all_words['words'].apply(lambda x: pd.Series(list(x)))
+def unfriendly(target_word):
+    global all_words
+    while True:
+        if (target_word not in all_words['words'].values):
+            return("That's not a valid word, please try another.")
+    print("Your word is ", target_word.upper(), ", but the computer doesn't know that.", sep='')
+    return(target_word)
+
+def game_setup():
+    global guessed_letters, wrongs, all_words, target_word, current_word
+    guessed_letters, wrongs = [], 0
+    current_word = list('_'*len(target_word))
+    print('Current word: ', ''.join(current_word))
+    all_words = all_words.loc[all_words['words'].str.len() == len(target_word)]
+    possible_words = all_words['words'].apply(lambda x: pd.Series(list(x)))
+    return(possible_words)
 
 def play_game(df):
     """
@@ -82,9 +91,36 @@ def play_game(df):
     sleep(.5)
     return(df)
 
-# runs the game until it wins or loses.
-while(True):
-    possible_words = play_game(possible_words)
+def gogogo():
+    global possible_words
+    while(True):
+        possible_words = play_game(possible_words)
+
+def fullgameplay():
+    global guessed_letters, wrongs, all_words, target_word, current_word, possible_words
+    all_words = reading()
+    target_word = friendly()
+    possible_words = game_setup()
+    gogogo()
+
+def pass_it_on():
+    global guessed_letters, wrongs, all_words, target_word, current_word, possible_words
+    return(guessed_letters, wrongs, all_words, target_word, current_word, possible_words)
+
+
+all_words = reading()
+# fullgameplay()
+
+# guessed_letters, wrongs, all_words, target_word, current_word, possible_words = pass_it_on()
+
+
+if __name__ == '__main__':
+    print('hahaha why')
+    fullgameplay()
+
+
+
+
 
 
 """
