@@ -5,8 +5,6 @@ import pandas as pd
 
 os.chdir('/Users/ajstein/Desktop/Real Life/Coding Projects/Hangman/')
 
-x = list(range(0,10))
-
 def reading():
     all_words = pd.read_table('./master_dict.txt', sep='\r', header=None, names=['words']) # read in data.
     all_words['words'] = all_words['words'].str.lower().drop_duplicates() # make sure there are no duplicates because of capitalization.
@@ -26,9 +24,10 @@ def friendly():
 
 def unfriendly(target_word):
     global all_words
-    while True:
-        if (target_word not in all_words['words'].values):
-            return("That's not a valid word, please try another.")
+    # FIXME: I need this to have some level of sanitation going on. For now I'll leave it off.
+    # while True:
+    #     if (target_word not in all_words['words'].values):
+    #         return("That's not a valid word, please try another.")
     print("Your word is ", target_word.upper(), ", but the computer doesn't know that.", sep='')
     return(target_word)
 
@@ -96,6 +95,13 @@ def gogogo():
     while(True):
         possible_words = play_game(possible_words)
 
+def load_game(my_word):
+    global guessed_letters, wrongs, all_words, target_word, current_word, possible_words
+    all_words = reading()
+    target_word = unfriendly(my_word)
+    possible_words = game_setup()
+    print('The game is fully loaded.')
+
 def fullgameplay():
     global guessed_letters, wrongs, all_words, target_word, current_word, possible_words
     all_words = reading()
@@ -103,24 +109,15 @@ def fullgameplay():
     possible_words = game_setup()
     gogogo()
 
-def pass_it_on():
-    global guessed_letters, wrongs, all_words, target_word, current_word, possible_words
-    return(guessed_letters, wrongs, all_words, target_word, current_word, possible_words)
-
-
-all_words = reading()
-# fullgameplay()
-
-# guessed_letters, wrongs, all_words, target_word, current_word, possible_words = pass_it_on()
 
 
 if __name__ == '__main__':
-    print('hahaha why')
     fullgameplay()
 
 
-
-
+# TODO: Clean up the FIXME you left earlier in the code.
+# TODO: (Re)comment out the code so you can not go insane later on.
+# TODO: Actually start playing with your turtles, now that you got your modules working.
 
 
 """
