@@ -2,11 +2,13 @@ import os, sys, random
 from time import sleep
 import turtle as t
 import hangman as hm
+import re
+import pandas as pd
 
 os.chdir('/Users/ajstein/Desktop/Real Life/Coding Projects/Hangman/')
 
 # this function brings in everything we need to run the variables from hangman in this space.
-hm.clear_log(False)
+# hm.clear_log(True)
 # hm.load_game('ant')
 # print('-'*20)
 # hm.gogogo()
@@ -19,11 +21,38 @@ print('---- LOG TIME ----')
 
 log = open('comm.log', 'r')
 loglist = []
+turns = []
+wrongs = []
 for line in log:
-    # print(line[:(len(line)-1)])
-    loglist.append(line[:(len(line)-1)])
+    loglist.append(line[:-1])
+    turns.append(0)
+    wrongs.append(0)
+    if re.match('turns', line):
+        turns[len(turns)-1] = int(re.search('\d+', line).group())
+    if re.match('wrongs', line):
+        wrongs[len(wrongs)-1] = int(re.search('\d+', line).group())
 
-print(loglist)
+
+content = pd.DataFrame({'message': loglist, 'turns': turns, 'wrongs': wrongs})
+
+# print(len(loglist))
+# print('turns: ', turns)
+# print('wrongs: ', wrongs)
+
+
+short = (content[content['turns'] != 0]).append(content[content['wrongs'] != 0]).sort_index()
+# print(short)
+
+# print(short.ix[:3,'turns'])
+
+sys.exit()
+
+for i in range(0,len(short)):
+    if short['turns'][i] != 0:
+        print(short['turns'])
+
+
+sys.exit()
 
 # for i in range(0,len(short)):
 #     print(short.iloc[i].upper())
@@ -44,12 +73,12 @@ def write_by_line(init_x, init_y, words):
 
 somewords = ['alpha', 'bravo', 'charlie', 'delta']
 
-t.speed(6)
-write_by_line(-400, 300, loglist)
+# t.speed(6)
+# write_by_line(-400, 300, loglist)
 
-t.done()
+# t.done()
 
-sys.exit()
+# sys.exit()
 
 # the hangman drawing
 def draw_gallows():
@@ -125,12 +154,12 @@ def draw_body(piece):
     # print(parts[piece])
     eval(parts[piece])
 
+# t.ht()
+# draw_gallows()
+# for i in range(1,9):
+    # draw_body(i)
 
-t.ht()
-draw_gallows()
-# draw_body(wrongs)
-
-t.done()
+# t.done()
 
 
 

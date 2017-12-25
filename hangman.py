@@ -106,6 +106,7 @@ def play_game(df):
     positions = [x for x, char in enumerate(target_word) if char == guess]
     if positions == []:
         wrongs += 1
+        logging.info('wrongs: ' + str(wrongs))
          # testing losing scenarios.
         if wrongs > 100:
             print('Failed! The computer guessed wrong 100 times.')
@@ -132,8 +133,11 @@ def gogogo():
     Runs play_game until play_game decides it's done.
     """
     global possible_words
+    n = 0
     while(True):
+        n += 1
         possible_words = play_game(possible_words)
+        logging.info('turns: ' + str(n))
 
 def load_game(my_word):
     """
