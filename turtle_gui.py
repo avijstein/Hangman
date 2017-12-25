@@ -20,11 +20,11 @@ print('---- LOG TIME ----')
 # sys.exit()
 
 log = open('comm.log', 'r')
-loglist = []
+messages = []
 turns = []
 wrongs = []
 for line in log:
-    loglist.append(line[:-1])
+    messages.append(line[:-1])
     turns.append(0)
     wrongs.append(0)
     if re.match('turns', line):
@@ -33,33 +33,19 @@ for line in log:
         wrongs[len(wrongs)-1] = int(re.search('\d+', line).group())
 
 
-content = pd.DataFrame({'message': loglist, 'turns': turns, 'wrongs': wrongs})
+# content = pd.DataFrame({'message': loglist, 'turns': turns, 'wrongs': wrongs})
+# short = (content[content['turns'] != 0]).append(content[content['wrongs'] != 0]).sort_index()
 
-# print(len(loglist))
+
+# print(len(messages))
 # print('turns: ', turns)
 # print('wrongs: ', wrongs)
 
-
-short = (content[content['turns'] != 0]).append(content[content['wrongs'] != 0]).sort_index()
-# print(short)
-
-# print(short.ix[:3,'turns'])
-
-sys.exit()
-
-for i in range(0,len(short)):
-    if short['turns'][i] != 0:
-        print(short['turns'])
-
-
-sys.exit()
-
-# for i in range(0,len(short)):
-#     print(short.iloc[i].upper())
-#     print('move down 50')
-
+# for i in range(0,10):
+    # print(messages[i], turns[i], wrongs[i])
 
 # sys.exit()
+
 
 
 def write_by_line(init_x, init_y, words):
@@ -69,18 +55,9 @@ def write_by_line(init_x, init_y, words):
         t.write(words[i], font = ('Garamond', 24, 'normal'))
         t.sety(init_y - (i+1)*25)
 
-
-
 somewords = ['alpha', 'bravo', 'charlie', 'delta']
 
-# t.speed(6)
-# write_by_line(-400, 300, loglist)
 
-# t.done()
-
-# sys.exit()
-
-# the hangman drawing
 def draw_gallows():
     t.speed(10)
     t.penup()
@@ -154,19 +131,33 @@ def draw_body(piece):
     # print(parts[piece])
     eval(parts[piece])
 
-# t.ht()
-# draw_gallows()
-# for i in range(1,9):
-    # draw_body(i)
 
-# t.done()
+def run_turtles(messages, turns, wrongs):
+    t.ht()
+    draw_gallows()
+    start_writing = 300
 
+    for i in range(0,len(messages)):
+        if (turns[i] == 0 and wrongs[i] == 0):
+            # if re.match('Success!', messages[i]):
+            #     print(messages[i])
+            #     t.speed(3)
+            #     t.penup()
+            #     t.setpos((0, -50))
+            #     t.write(messages[i], font = ('Times New Roman', 24, 'normal'))
 
+            print(messages[i])
+            t.speed(3)
+            t.penup()
+            t.setpos((-450, start_writing))
+            t.write(messages[i], font = ('Times New Roman', 24, 'normal'))
+            start_writing -= 25
+        if wrongs[i] > 0:
+            draw_body(wrongs[i])
 
+run_turtles(messages, turns, wrongs)
 
-
-
-
+t.done()
 
 
 
