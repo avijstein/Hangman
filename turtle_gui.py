@@ -7,13 +7,18 @@ import pandas as pd
 
 os.chdir('/Users/ajstein/Desktop/Real Life/Coding Projects/Hangman/')
 
-# this function brings in everything we need to run the variables from hangman in this space.
-# hm.clear_log(True)
-# hm.load_game('ant')
-# print('-'*20)
-# hm.gogogo()
+def write_new_word(word):
+    """
+    Clears the comm.log and loads a game on the turtle_gui side.
+    Doesn't generate gui, just preps it.
+    """
+    hm.clear_log(True)
+    hm.load_game(word)
+    print('-'*20)
+    hm.gogogo()
+    # sys.exit() inherited from play_game().
 
-# sys.exit()
+# write_new_word('butterfly')
 
 print('---- LOG TIME ----')
 # short = hm.all_words.iloc[0:5,0]
@@ -45,17 +50,6 @@ for line in log:
     # print(messages[i], turns[i], wrongs[i])
 
 # sys.exit()
-
-
-
-def write_by_line(init_x, init_y, words):
-    t.penup()
-    t.setpos((init_x, init_y))
-    for i in range(0, len(words)):
-        t.write(words[i], font = ('Garamond', 24, 'normal'))
-        t.sety(init_y - (i+1)*25)
-
-somewords = ['alpha', 'bravo', 'charlie', 'delta']
 
 
 def draw_gallows():
@@ -108,12 +102,34 @@ def draw_body(piece):
         t.setpos((175,125))
         t.pendown()
         t.setpos((205, 95))
+    def open_mouth():
+        t.penup()
+        t.setpos((175, 235))
+        t.pendown()
+        t.dot(10)
     def frown():
+        t.penup()
+        t.setpos((175, 235))
+        t.pendown()
+        t.dot(15, 'white')
         t.penup()
         t.setpos((165, 235))
         t.pendown()
         t.left(90)
         t.circle(-10, extent = 180)
+        t.penup()
+    def smile():
+        t.penup()
+        t.setpos((175, 235))
+        t.pendown()
+        t.dot(15, 'white')
+        t.penup()
+        t.setpos((165, 240))
+        t.pendown()
+        t.right(90)
+        t.circle(10, extent = 180)
+        t.penup()
+
     def deadeyes():
         t.register_shape('dead', ((-5,-5), (-0.01,0), (-5,5), (0,0.01), (5,5), (0.01,0), (5,-5), (0,-0.01)))
         t.penup()
@@ -125,34 +141,62 @@ def draw_body(piece):
         t.dot(15, 'white')
         stamp2 = t.stamp()
 
-    t.speed(10)
-    parts = ['head()', 'body()', 'arm1()', 'arm2()', 'leg1()', 'leg2()', 'frown()', 'deadeyes()']
+    if piece == 0:
+        t.speed(10)
+    else:
+        t.speed(3)
+    parts = ['head()', 'body()', 'arm1()', 'arm2()', 'leg1()', 'leg2()', 'open_mouth()', 'deadeyes()', 'frown()', 'smile()']
     piece = piece - 1
-    # print(parts[piece])
     eval(parts[piece])
+
+def over_write(text, align, font):
+    """
+    Overwriting turtles is surprisingly hard. This function writes the previous
+    text five times in white to clear it.
+    """
+    t.pencolor('white')
+    for i in range(0,5):
+        t.write(text, align = align, font = font)
+    t.pencolor('black')
 
 
 def run_turtles(messages, turns, wrongs):
     t.ht()
     draw_gallows()
     start_writing = 300
+    last_message = ''
 
-    for i in range(0,len(messages)):
+    # Displaying "Initializing" message.
+    t.penup(); t.setpos((0, 400))
+    t.write(messages[0], align = 'center', font = ('Times New Roman', 24, 'normal'))
+    t.setpos((0, 375))
+    t.write(messages[1], align = 'center', font = ('Times New Roman', 24, 'normal'))
+
+
+    for i in range(2,len(messages)):
         if (turns[i] == 0 and wrongs[i] == 0):
-            # if re.match('Success!', messages[i]):
-            #     print(messages[i])
-            #     t.speed(3)
-            #     t.penup()
-            #     t.setpos((0, -50))
-            #     t.write(messages[i], font = ('Times New Roman', 24, 'normal'))
-
-            print(messages[i])
+            if re.match('Success!', messages[i]):
+                draw_body(10)
+                t.setpos((250, 325))
+                t.write('Success! The computer wins.', align = 'center', font = ('Times New Roman', 22, 'bold'))
+                return
+            if re.match('Current word: ', messages[i]):
+                t.setpos((250, -50))
+                over_write(last_message, align = 'center', font = ('Times New Roman', 22, 'bold'))
+                t.write(messages[i], align = 'center', font = ('Times New Roman', 22, 'bold'))
+                last_message = messages[i]
+                continue
             t.speed(3)
             t.penup()
             t.setpos((-450, start_writing))
-            t.write(messages[i], font = ('Times New Roman', 24, 'normal'))
+            t.write(messages[i], font = ('Times New Roman', 22, 'normal'))
             start_writing -= 25
         if wrongs[i] > 0:
+            if wrongs[i] == 9:
+                draw_body(wrongs[i])
+                t.setpos((250, 325))
+                t.write('Failed! The computer loses.', align = 'center', font = ('Times New Roman', 22, 'bold'))
+                return
             draw_body(wrongs[i])
 
 run_turtles(messages, turns, wrongs)
@@ -160,6 +204,9 @@ run_turtles(messages, turns, wrongs)
 t.done()
 
 
+# TODO: Play again? Come up with a word to beat the game?
+# TODO: Advance by clicking.
+# TODO: Having "best options" scrolling(?) down left side. Might have plenty of room without other stuff.
 
 
 
