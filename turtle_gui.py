@@ -18,7 +18,7 @@ def write_new_word(word):
     hm.gogogo()
     # sys.exit() inherited from play_game().
 
-# write_new_word('butterfly')
+# write_new_word('cow')
 
 print('---- LOG TIME ----')
 # short = hm.all_words.iloc[0:5,0]
@@ -160,6 +160,19 @@ def over_write(text, align, font):
     t.pencolor('black')
 
 
+# print(eval(messages[4][14:]))
+#
+# top_guess = eval(messages[4][14:])[0]
+# other_guesses = eval(messages[4][14:])[1:]
+#
+# print('top_guess: ', top_guess)
+# print('other_guesses: ', other_guesses)
+#
+#
+# sys.exit()
+
+
+
 def run_turtles(messages, turns, wrongs):
     t.ht()
     draw_gallows()
@@ -206,7 +219,9 @@ t.done()
 
 # TODO: Play again? Come up with a word to beat the game?
 # TODO: Advance by clicking.
-# TODO: Having "best options" scrolling(?) down left side. Might have plenty of room without other stuff.
+# TODO: Build "best options" leaderboard with #1 suggestion and four others below it. Have it update each time.
+# TODO: In play_game(), if the guess is wrong, the computer should still eliminate all words with that letter.
+# TODO: Update README with description of turtles, along with screencaps of it.
 
 
 
