@@ -66,25 +66,37 @@ def game_setup():
     guessed_letters, wrongs = [], 0
     current_word = list('_'*len(target_word))
     print('Current word: ', ''.join(current_word))
-    logging.info('Current word: ' + str(''.join(current_word)))
+    # logging.info('Current word: ' + str(''.join(current_word))) #FIXME
     all_words = all_words.loc[all_words['words'].str.len() == len(target_word)]
     possible_words = all_words['words'].apply(lambda x: pd.Series(list(x)))
     return(possible_words)
 
-def play_game(df):
+def null_check(df, guess, go):
+    if not go:
+        return
+    # print('before: ', len(df))
+    for i in range(0,len(df.columns)):
+        df = df.loc[df[i] != guess]
+    # print('after: ', len(df))
+
+
+def play_game(df, go):
     """
     Takes in a dataframe of all possible words (expanded), finds the most frequent letter,
     guesses it, and then evaluates the possibilities from there.
     """
+    global tracking_wrongs, kill_switch
     global guessed_letters, current_word, target_word, wrongs
 
     # testing winning scenarios.
     if (''.join(current_word) == ''.join(target_word)):
         print('Success! Only took ', len(guessed_letters), ' turns with ', wrongs, ' wrong guesses!', sep = '')
         print('Final word: ', (''.join(current_word)).upper())
-        logging.info('Success! Only took ' + str(len(guessed_letters)) + ' turns with ' + str(wrongs) + ' wrong guesses!')
-        logging.info('Final word: ' + str((''.join(current_word)).upper()))
-        sys.exit()
+        # logging.info('Success! Only took ' + str(len(guessed_letters)) + ' turns with ' + str(wrongs) + ' wrong guesses!') #FIXME
+        # logging.info('Final word: ' + str((''.join(current_word)).upper())) #FIXME
+        # sys.exit()
+        kill_switch = 1
+        return
 
     # calculates frequency of each letter of all possible words.
     # finds the most likely (that hasn't been guessed already).
@@ -96,7 +108,7 @@ def play_game(df):
     options = new_df['total'].index
     options = options[~options.isin(guessed_letters)]
     # print('options: ', list(options)[0:5])
-    logging.info('Best Options: ' + str(list(options)[0:5]))
+    # logging.info('Best Options: ' + str(list(options)[0:5])) #FIXME
     # print('guessed letters: ', guessed_letters)
     guess = options[0]
     guessed_letters.append(guess)
@@ -104,9 +116,11 @@ def play_game(df):
 
     # checks the guess to see if it's correct (and where it is in the word).
     positions = [x for x, char in enumerate(target_word) if char == guess]
+    # print('positions: ', positions)
     if positions == []:
         wrongs += 1
-        logging.info('wrongs: ' + str(wrongs))
+        tracking_wrongs += 1
+        # logging.info('wrongs: ' + str(wrongs)) #FIXME
          # testing losing scenarios.
         if wrongs > 100:
             print('Failed! The computer guessed wrong 100 times.')
@@ -115,8 +129,16 @@ def play_game(df):
             logging.info(str(''.join(current_word)))
             sys.exit()
         # print('Wrong guess. So far: ', wrongs)
-        sleep(.3)
+        # sleep(.3) #FIXME
+
+
+        # if the letter isn't there, drop all rows that contain the letter.
+        # tested with 'jaguar' and it took longer than without.
+        # running battery test to see if jaguar is an anomaly.
+        null_check(df, guess, go)
+
         return(df)
+
 
     # fills in any correct guesses.
     # narrows down possible words based on letters and positions.
@@ -124,20 +146,25 @@ def play_game(df):
         current_word[i] = guess
         df = df.loc[df[i] == guess]
     print('Current word: ', ''.join(current_word))
-    logging.info('Current word: ' + str(''.join(current_word)))
-    sleep(.5)
+    # logging.info('Current word: ' + str(''.join(current_word))) #FIXME
+    # sleep(.5) #FIXME
     return(df)
 
-def gogogo():
+def gogogo(go):
     """
     Runs play_game until play_game decides it's done.
     """
+    global tracking_turns, tracking_go, kill_switch
     global possible_words
+    kill_switch = 0
+    if go:
+        tracking_go = 'on'
     n = 0
-    while(True):
+    while(kill_switch == 0):
         n += 1
-        possible_words = play_game(possible_words)
-        logging.info('turns: ' + str(n))
+        tracking_turns += 1
+        possible_words = play_game(possible_words, go)
+        # logging.info('turns: ' + str(n)) #FIXME
 
 def load_game(my_word):
     """
@@ -159,6 +186,37 @@ def fullgameplay():
     target_word = friendly()
     possible_words = game_setup()
     gogogo()
+
+
+
+# testing null_check function:
+logging.basicConfig(filename='null.log', level = logging.DEBUG, format = '')
+
+for i in range(0,3):
+    # wtih null_check() route
+    tracking_turns, tracking_wrongs, tracking_go = 0, 0, 'off'
+    all_words = reading()
+    many_words = all_words # making a copy for a second run
+    target_word = all_words.sample(1).iloc[0]['words']
+    print('target_word: ', target_word)
+    possible_words = game_setup()
+    gogogo(True)
+    print(tracking_turns, tracking_wrongs, tracking_go)
+    logging.info('Target Word: ' + str(target_word))
+    logging.info(str(tracking_turns) + ', ' + str(tracking_wrongs) + ', ' + str(tracking_go))
+    # with null_check() route
+    tracking_turns, tracking_wrongs, tracking_go = 0, 0, 'off'
+    all_words = many_words
+    print('target_word: ', target_word)
+    possible_words = game_setup()
+    gogogo(False)
+    print(tracking_turns, tracking_wrongs, tracking_go)
+    logging.info(str(tracking_turns) + ', ' + str(tracking_wrongs) + ', ' + str(tracking_go))
+
+
+sys.exit()
+
+
 
 
 # If running this script from the command line, full game plays.
