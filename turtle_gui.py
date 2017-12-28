@@ -217,7 +217,7 @@ run_turtles(messages, turns, wrongs)
 t.done()
 
 
-# TODO: In play_game(), if the guess is wrong, the computer should still eliminate all words with that letter.
+# TODO: Add feature of "how many words am i pulling from" with len(df).
 # TODO: Build "best options" leaderboard with #1 suggestion and four others below it. Have it update each time.
 # TODO: Update README with description of turtles, along with screencaps of it.
 # TODO: Play again? Come up with a word to beat the game?
