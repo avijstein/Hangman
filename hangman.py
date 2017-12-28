@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import logging
 
+# Change to user's cwd.
 os.chdir('/Users/ajstein/Desktop/Real Life/Coding Projects/Hangman/')
 
 def clear_log(yes_or_no):
@@ -48,6 +49,7 @@ def unfriendly(target_word):
     """
     global all_words
     if (target_word not in all_words['words'].values):
+        sys.stdout = sys.__stdout__ # enable printing
         print("That's not a valid word, please try another and start again.")
         logging.info("That's not a valid word, please try another and start again.")
         sys.exit()

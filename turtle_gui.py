@@ -1,13 +1,13 @@
-import os, sys, random
+import os, sys, random, re
 from time import sleep
 import turtle as t
 import hangman as hm
-import re
 import pandas as pd
 
+# Change to user's cwd.
 os.chdir('/Users/ajstein/Desktop/Real Life/Coding Projects/Hangman/')
 
-def write_new_word(word):
+def write_new_word(word, go):
     """
     Clears the comm.log and loads a game on the turtle_gui side.
     Doesn't generate gui, just preps it.
@@ -16,41 +16,13 @@ def write_new_word(word):
     hm.load_game(word)
     print('-'*20)
     hm.gogogo()
-    sys.exit()
-
-# write_new_word('butterfly')
-
-print('---- LOG TIME ----')
-
-log = open('comm.log', 'r')
-messages = []
-turns = []
-wrongs = []
-for line in log:
-    messages.append(line[:-1])
-    turns.append(0)
-    wrongs.append(0)
-    if re.match('turns', line):
-        turns[len(turns)-1] = int(re.search('\d+', line).group())
-    if re.match('wrongs', line):
-        wrongs[len(wrongs)-1] = int(re.search('\d+', line).group())
-
-
-# content = pd.DataFrame({'message': loglist, 'turns': turns, 'wrongs': wrongs})
-# short = (content[content['turns'] != 0]).append(content[content['wrongs'] != 0]).sort_index()
-
-
-# print(len(messages))
-# print('turns: ', turns)
-# print('wrongs: ', wrongs)
-
-# for i in range(0,10):
-    # print(messages[i], turns[i], wrongs[i])
-
-# sys.exit()
-
+    if go != 'go':
+        sys.exit()
 
 def draw_gallows():
+    """
+    A series of turtle commands to draw the gallows.
+    """
     t.speed(10)
     t.penup()
     t.setpos((175, 275))
@@ -65,6 +37,9 @@ def draw_gallows():
     t.penup()
 
 def draw_body(piece):
+    """
+    A series of turtle commands to draw the body, to be executed one at a time.
+    """
     def head():
         t.penup()
         t.setpos((175, 225))
@@ -157,7 +132,12 @@ def over_write(text, align, font):
         t.write(text, align = align, font = font)
     t.pencolor('black')
 
-def run_turtles(messages, turns, wrongs):
+def run_turtles():
+    """
+    Reads the log file and commands turtles to move or write based on each line of the log.
+    """
+    log = open('comm.log', 'r')
+    messages = [line[:-1] for line in list(log)]
     t.ht()
     draw_gallows()
     last_message, last_options, last_size, last_len = '', '', '', 6
@@ -229,16 +209,32 @@ def run_turtles(messages, turns, wrongs):
                 t.write('Failed! The computer loses.', align = 'center', font = ('Times New Roman', 22, 'bold'))
                 return
 
+def total_turtles(go):
+    word = input('What word would you like to choose? ')
+    print('Your game is loading...')
+    sys.stdout = open(os.devnull, 'w')  # disable printing
+    write_new_word(word, go)
+    run_turtles()
+    t.done()
+    sys.stdout = sys.__stdout__  # enable printing
 
-run_turtles(messages, turns, wrongs)
-
-t.done()
 
 
-# TODO: Read from the log file directly with regex, no need for pre-lists.
+total_turtles('go')
+
+
+# write_new_word('butterfly')
+# run_turtles()
+# t.done()
+
+
 # TODO: Update README with description of turtles, along with screencaps of it.
 # TODO: Play again? Come up with a word to beat the game?
 # TODO: Advance by clicking.
+
+
+
+
 
 
 
