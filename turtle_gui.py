@@ -16,13 +16,11 @@ def write_new_word(word):
     hm.load_game(word)
     print('-'*20)
     hm.gogogo()
-    # sys.exit() inherited from play_game().
+    sys.exit()
 
-# write_new_word('cow')
+# write_new_word('butterfly')
 
 print('---- LOG TIME ----')
-# short = hm.all_words.iloc[0:5,0]
-# sys.exit()
 
 log = open('comm.log', 'r')
 messages = []
@@ -159,25 +157,10 @@ def over_write(text, align, font):
         t.write(text, align = align, font = font)
     t.pencolor('black')
 
-
-# print(eval(messages[4][14:]))
-#
-# top_guess = eval(messages[4][14:])[0]
-# other_guesses = eval(messages[4][14:])[1:]
-#
-# print('top_guess: ', top_guess)
-# print('other_guesses: ', other_guesses)
-#
-#
-# sys.exit()
-
-
-
 def run_turtles(messages, turns, wrongs):
     t.ht()
     draw_gallows()
-    start_writing = 300
-    last_message = ''
+    last_message, last_options, last_size, last_len = '', '', '', 6
 
     # Displaying "Initializing" message.
     t.penup(); t.setpos((0, 400))
@@ -185,40 +168,74 @@ def run_turtles(messages, turns, wrongs):
     t.setpos((0, 375))
     t.write(messages[1], align = 'center', font = ('Times New Roman', 24, 'normal'))
 
-
     for i in range(2,len(messages)):
-        if (turns[i] == 0 and wrongs[i] == 0):
-            if re.match('Success!', messages[i]):
-                draw_body(10)
-                t.setpos((250, 325))
-                t.write('Success! The computer wins.', align = 'center', font = ('Times New Roman', 22, 'bold'))
-                return
-            if re.match('Current word: ', messages[i]):
-                t.setpos((250, -50))
-                over_write(last_message, align = 'center', font = ('Times New Roman', 22, 'bold'))
-                t.write(messages[i], align = 'center', font = ('Times New Roman', 22, 'bold'))
-                last_message = messages[i]
-                continue
-            t.speed(3)
-            t.penup()
-            t.setpos((-450, start_writing))
-            t.write(messages[i], font = ('Times New Roman', 22, 'normal'))
-            start_writing -= 25
-        if wrongs[i] > 0:
-            if wrongs[i] == 9:
-                draw_body(wrongs[i])
+
+        if re.match('dict_size: ', messages[i]):
+            # Show Number of Words Left
+            t.penup(); t.setpos((-450, 275))
+            over_write(last_size, align = 'left', font = ('Times New Roman', 24, 'normal'))
+            write_str = 'Words to Choose From: ' + str(re.search('\d+', messages[i]).group())
+            t.write(write_str, font = ('Times New Roman', 24, 'normal'))
+            last_size = write_str
+
+        if re.match('Success!', messages[i]):
+            # Clear Last Options
+            t.setpos((-450, 200))
+            for j in range(1, last_len):
+                overwrite_str = "Computer's #" + str(j) + " guess: " + eval(last_options[14:])[j-1].upper()
+                over_write(overwrite_str, align = 'left', font = ('Times New Roman', 24, 'normal'))
+                t.setpos((-450, (200-j*25)))
+
+            # Draw Smile
+            draw_body(10)
+            t.setpos((250, 325))
+            t.write('Success! The computer wins.', align = 'center', font = ('Times New Roman', 22, 'bold'))
+            return
+
+        if re.match('Current word: ', messages[i]):
+            # Updating Current Word
+            t.setpos((250, -50))
+            over_write(last_message, align = 'center', font = ('Times New Roman', 22, 'bold'))
+            t.write(messages[i], align = 'center', font = ('Times New Roman', 22, 'bold'))
+            last_message = messages[i]
+
+        if re.match('Best Options: ', messages[i]):
+            t.penup(); t.setpos((-450, 200))
+            options_length = len(eval(messages[i][14:]))+1
+
+            # Clearing Last Options
+            for j in range(1, last_len):
+                if last_options == '': break
+                overwrite_str = "Computer's #" + str(j) + " guess: " + eval(last_options[14:])[j-1].upper()
+                over_write(overwrite_str, align = 'left', font = ('Times New Roman', 24, 'normal'))
+                t.setpos((-450, (200-j*25)))
+
+            t.setpos((-450, 200))
+
+            # Write Current Options
+            for j in range(1, options_length):
+                write_str = "Computer's #" + str(j) + " guess: " + eval(messages[i][14:])[j-1].upper()
+                t.write(write_str, font = ('Times New Roman', 24, 'normal'))
+                t.setpos((-450, (200-j*25)))
+
+            last_options, last_len = messages[i], options_length
+
+        if re.match('wrongs: ', messages[i]):
+            # Update the Hangman
+            wrong = int(re.search('\d+', messages[i]).group())
+            draw_body(wrong)
+            if wrong == 9:
                 t.setpos((250, 325))
                 t.write('Failed! The computer loses.', align = 'center', font = ('Times New Roman', 22, 'bold'))
                 return
-            draw_body(wrongs[i])
+
 
 run_turtles(messages, turns, wrongs)
 
 t.done()
 
 
-# TODO: Add feature of "how many words am i pulling from" with len(df).
-# TODO: Build "best options" leaderboard with #1 suggestion and four others below it. Have it update each time.
+# TODO: Read from the log file directly with regex, no need for pre-lists.
 # TODO: Update README with description of turtles, along with screencaps of it.
 # TODO: Play again? Come up with a word to beat the game?
 # TODO: Advance by clicking.

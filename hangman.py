@@ -77,7 +77,7 @@ def play_game(df):
     guesses it, and then evaluates the possibilities from there.
     """
     global guessed_letters, current_word, target_word, wrongs, kill_switch
-
+    logging.info('dict_size: ' + str(len(df)))
     # testing winning scenarios.
     if (''.join(current_word) == ''.join(target_word)):
         print('Success! Only took ', len(guessed_letters), ' turns with ', wrongs, ' wrong guesses!', sep = '')
@@ -157,7 +157,7 @@ def load_game(my_word):
     target_word = unfriendly(my_word)
     possible_words = game_setup()
     print('The game is fully loaded.')
-    logging.info('The game is fully loaded.')
+    # logging.info('The game is fully loaded.')
 
 def fullgameplay():
     """
