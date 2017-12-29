@@ -147,8 +147,9 @@ def gogogo():
     n = 0
     while(kill_switch == 0):
         n += 1
-        possible_words = play_game(possible_words)
         logging.info('turns: ' + str(n))
+        possible_words = play_game(possible_words)
+
 
 def load_game(my_word):
     """
