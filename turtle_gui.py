@@ -136,7 +136,7 @@ def run_turtles():
     """
     Reads the log file and commands turtles to move or write based on each line of the log.
     """
-    global last_message, last_options, last_size, last_len, i, done_switch
+    global last_message, last_options, last_size, last_len, i
     log = open('comm.log', 'r')
     messages = [line[:-1] for line in list(log)]
     t.ht()
@@ -148,11 +148,12 @@ def run_turtles():
     t.write(messages[0], align = 'center', font = ('Times New Roman', 24, 'normal'))
     t.setpos((0, 375))
     t.write(messages[1], align = 'center', font = ('Times New Roman', 24, 'normal'))
+    t.penup(); t.setpos((0, -100))
+    t.write('Ready!', align = 'center', font = ('Times New Roman', 24, 'bold'))
 
-    done_switch = 0
 
     def clickme(x, y):
-        global last_message, last_options, last_size, last_len, i, done_switch
+        global last_message, last_options, last_size, last_len, i
 
         # Clearing the "Ready!"
         t.penup(); t.setpos((0, -100))
@@ -230,13 +231,7 @@ def run_turtles():
                     t.write('Failed! The computer loses.', align = 'center', font = ('Times New Roman', 22, 'bold'))
                     return
 
-
-
     t.onscreenclick(clickme)
-
-
-
-
 
 
 def total_turtles(go):
@@ -259,7 +254,6 @@ t.done()
 
 # TODO: Update README with description of turtles, along with screencaps of it.
 # TODO: Play again? Come up with a word to beat the game?
-# TODO: Advance by clicking.
 
 
 
