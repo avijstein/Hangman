@@ -142,14 +142,16 @@ def run_turtles():
     t.ht()
     draw_gallows()
     last_message, last_options, last_size, last_len, i = '', '', '', 6, 0
+    normal_font, bold_font = ('Times New Roman', 24, 'normal'), ('Times New Roman', 24, 'bold')
 
     # Displaying "Initializing" message.
     t.penup(); t.setpos((0, 400))
-    t.write(messages[0], align = 'center', font = ('Times New Roman', 24, 'normal'))
+    t.write(messages[0], align = 'center', font = normal_font)
     t.setpos((0, 375))
-    t.write(messages[1], align = 'center', font = ('Times New Roman', 24, 'normal'))
+    init_str = "Your word is " + (messages[1].split(' ')[3][:-1]) + ", but I can't see that."
+    t.write(init_str, align = 'center', font = normal_font)
     t.penup(); t.setpos((0, -100))
-    t.write('Ready!', align = 'center', font = ('Times New Roman', 24, 'bold'))
+    t.write('Ready!', align = 'center', font = bold_font)
 
 
     def clickme(x, y):
@@ -157,7 +159,7 @@ def run_turtles():
 
         # Clearing the "Ready!"
         t.penup(); t.setpos((0, -100))
-        over_write('Ready!', align = 'center', font = ('Times New Roman', 24, 'bold'))
+        over_write('Ready!', align = 'center', font = bold_font)
 
         # Every click advances line by line until it reaches a new turn.
         while(True):
@@ -169,29 +171,32 @@ def run_turtles():
             if re.match('turns: ', messages[i]):
                 # Writing "Ready!" at the end of each turn.
                 t.penup(); t.setpos((0, -100))
-                t.write('Ready!', align = 'center', font = ('Times New Roman', 24, 'bold'))
+                t.write('Ready!', align = 'center', font = bold_font)
                 return
 
             if re.match('dict_size: ', messages[i]):
                 # Show Number of Words Left
                 t.penup(); t.setpos((-450, 275))
-                over_write(last_size, align = 'left', font = ('Times New Roman', 24, 'normal'))
+                over_write(last_size, align = 'left', font = normal_font)
                 write_str = 'Words to Choose From: ' + str(re.search('\d+', messages[i]).group())
-                t.write(write_str, font = ('Times New Roman', 24, 'normal'))
+                t.write(write_str, font = normal_font)
                 last_size = write_str
 
             if re.match('Success!', messages[i]):
                 # Clear Last Options
                 t.setpos((-450, 200))
                 for j in range(1, last_len):
-                    overwrite_str = "Computer's #" + str(j) + " guess: " + eval(last_options[14:])[j-1].upper()
-                    over_write(overwrite_str, align = 'left', font = ('Times New Roman', 24, 'normal'))
+                    overwrite_str = "My #" + str(j) + " guess: " + eval(last_options[14:])[j-1].upper()
+                    if j == 1:
+                                            over_write(overwrite_str, align = 'left', font = bold_font)
+                    else:
+                        over_write(overwrite_str, align = 'left', font = normal_font)
                     t.setpos((-450, (200-j*25)))
 
                 # Draw Smile
                 draw_body(10)
                 t.setpos((250, 325))
-                t.write('Success! The computer wins.', align = 'center', font = ('Times New Roman', 22, 'bold'))
+                t.write('I won! Want to play again?', align = 'center', font = ('Times New Roman', 22, 'bold'))
                 return
 
             if re.match('Current word: ', messages[i]):
@@ -208,16 +213,22 @@ def run_turtles():
                 # Clearing Last Options
                 for j in range(1, last_len):
                     if last_options == '': break
-                    overwrite_str = "Computer's #" + str(j) + " guess: " + eval(last_options[14:])[j-1].upper()
-                    over_write(overwrite_str, align = 'left', font = ('Times New Roman', 24, 'normal'))
+                    overwrite_str = "My #" + str(j) + " guess: " + eval(last_options[14:])[j-1].upper()
+                    if j == 1:
+                        over_write(overwrite_str, align = 'left', font = bold_font)
+                    else:
+                        over_write(overwrite_str, align = 'left', font = normal_font)
                     t.setpos((-450, (200-j*25)))
 
                 t.setpos((-450, 200))
 
                 # Write Current Options
                 for j in range(1, options_length):
-                    write_str = "Computer's #" + str(j) + " guess: " + eval(messages[i][14:])[j-1].upper()
-                    t.write(write_str, font = ('Times New Roman', 24, 'normal'))
+                    write_str = "My #" + str(j) + " guess: " + eval(messages[i][14:])[j-1].upper()
+                    if j == 1:
+                        t.write(write_str, font = bold_font)
+                    else:
+                        t.write(write_str, font = normal_font)
                     t.setpos((-450, (200-j*25)))
 
                 last_options, last_len = messages[i], options_length
@@ -228,7 +239,8 @@ def run_turtles():
                 draw_body(wrong)
                 if wrong == 9:
                     t.setpos((250, 325))
-                    t.write('Failed! The computer loses.', align = 'center', font = ('Times New Roman', 22, 'bold'))
+                    t.write('I lost! Want to play again?', align = 'center', font = ('Times New Roman', 22, 'bold'))
+                    i = len(messages) - 1 # triggers sys.exit() in next iteration.
                     return
 
     t.onscreenclick(clickme)
@@ -250,15 +262,6 @@ def total_turtles(go):
 
 run_turtles()
 t.done()
-
-
-# TODO: Update README with description of turtles, along with screencaps of it.
-# TODO: Play again? Come up with a word to beat the game?
-
-
-
-
-
 
 
 
