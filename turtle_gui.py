@@ -277,7 +277,7 @@ def total_turtles(go):
 
 # total_turtles('go')
 
-# write_new_word('catfish', 'go away')
+write_new_word('butterfly', 'go')
 
 run_turtles()
 t.done()
