@@ -66,7 +66,7 @@ def game_setup():
     """
     global guessed_letters, wrongs, all_words, target_word, current_word
     guessed_letters, wrongs = [], 0
-    current_word = list('_'*len(target_word))
+    current_word = list('-'*len(target_word))
     print('Current word: ', ''.join(current_word))
     logging.info('Current word: ' + str(''.join(current_word)))
     all_words = all_words.loc[all_words['words'].str.len() == len(target_word)]

@@ -153,7 +153,6 @@ def run_turtles():
     t.penup(); t.setpos((0, -100))
     t.write('Ready!', align = 'center', font = bold_font)
 
-
     def clickme(x, y):
         global last_message, last_options, last_size, last_len, i
 
@@ -188,7 +187,7 @@ def run_turtles():
                 for j in range(1, last_len):
                     overwrite_str = "My #" + str(j) + " guess: " + eval(last_options[14:])[j-1].upper()
                     if j == 1:
-                                            over_write(overwrite_str, align = 'left', font = bold_font)
+                        over_write(overwrite_str, align = 'left', font = bold_font)
                     else:
                         over_write(overwrite_str, align = 'left', font = normal_font)
                     t.setpos((-450, (200-j*25)))
@@ -257,11 +256,27 @@ def total_turtles(go):
 
 # total_turtles('go')
 
-# write_new_word('butterfly', 'go away')
-
+# write_new_word('cat', 'go away')
 
 run_turtles()
 t.done()
+
+
+
+
+
+
+
+
+# TODO: Get rid of first ready click.
+# TODO: Guessed letters accumulating at the bottom.
+# TODO: Add a counter of number of wrong answers / turns?
+# TODO: Filter all other columns by letters you've guessed. Example: able, guessed e, filter out anything with an e in the first three columns.
+
+
+
+
+
 
 
 
