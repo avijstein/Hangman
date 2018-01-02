@@ -104,6 +104,7 @@ def play_game(df):
     # print('guessed letters: ', guessed_letters)
     guess = options[0]
     guessed_letters.append(guess)
+    logging.info('Guessed Letter: ' + str(guess))
     # print('my guess: ', guess)
 
     # checks the guess to see if it's correct (and where it is in the word).

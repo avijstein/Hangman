@@ -132,16 +132,21 @@ def over_write(text, align, font):
         t.write(text, align = align, font = font)
     t.pencolor('black')
 
+# def discard_bin(word, num):
+
+
+
+
 def run_turtles():
     """
     Reads the log file and commands turtles to move or write based on each line of the log.
     """
-    global last_message, last_options, last_size, last_len, i
+    global last_message, last_options, last_size, last_len, i, guess_counter
     log = open('comm.log', 'r')
     messages = [line[:-1] for line in list(log)]
     t.ht()
     draw_gallows()
-    last_message, last_options, last_size, last_len, i = '', '', '', 6, 0
+    last_message, last_options, last_size, last_len, i, guess_counter = '', '', '', 6, 0, 0
     normal_font, bold_font = ('Times New Roman', 24, 'normal'), ('Times New Roman', 24, 'bold')
 
     # Displaying "Initializing" message.
@@ -151,14 +156,16 @@ def run_turtles():
     init_str = "Your word is " + (messages[1].split(' ')[3][:-1]) + ", but I can't see that."
     t.write(init_str, align = 'center', font = normal_font)
     t.penup(); t.setpos((0, -100))
-    t.write('Ready!', align = 'center', font = bold_font)
+    t.write('Ready!', align = 'center', font = ('Times New Roman', 30, 'bold'))
+    t.setpos((0, -225))
+    t.write('Guessed Letters', align = 'center', font = bold_font)
 
     def clickme(x, y):
-        global last_message, last_options, last_size, last_len, i
+        global last_message, last_options, last_size, last_len, i, guess_counter
 
         # Clearing the "Ready!"
         t.penup(); t.setpos((0, -100))
-        over_write('Ready!', align = 'center', font = bold_font)
+        over_write('Ready!', align = 'center', font = ('Times New Roman', 30, 'bold'))
 
         # Every click advances line by line until it reaches a new turn.
         while(True):
@@ -170,7 +177,7 @@ def run_turtles():
             if re.match('turns: ', messages[i]):
                 # Writing "Ready!" at the end of each turn.
                 t.penup(); t.setpos((0, -100))
-                t.write('Ready!', align = 'center', font = bold_font)
+                t.write('Ready!', align = 'center', font = ('Times New Roman', 30, 'bold'))
                 return
 
             if re.match('dict_size: ', messages[i]):
@@ -232,6 +239,20 @@ def run_turtles():
 
                 last_options, last_len = messages[i], options_length
 
+            if re.match('Guessed Letter: ', messages[i]):
+                # Adds guessed words to bin at the bottom.
+                guess_letter = re.search('\w$', messages[i]).group().upper()
+                xspacing = list(range(-300, 300, 23))
+                t.penup()
+                t.setpos((xspacing[guess_counter], -300))
+                if (guess_letter not in messages[1].split(' ')[3][:-1]):
+                    t.pencolor('red')
+                    t.write(guess_letter, align = 'center', font = normal_font)
+                    t.pencolor('black')
+                else:
+                    t.write(guess_letter, align = 'center', font = normal_font)
+                guess_counter += 1
+
             if re.match('wrongs: ', messages[i]):
                 # Update the Hangman
                 wrong = int(re.search('\d+', messages[i]).group())
@@ -256,27 +277,10 @@ def total_turtles(go):
 
 # total_turtles('go')
 
-# write_new_word('cat', 'go away')
+# write_new_word('catfish', 'go away')
 
 run_turtles()
 t.done()
-
-
-
-
-
-
-
-
-# TODO: Get rid of first ready click.
-# TODO: Guessed letters accumulating at the bottom.
-# TODO: Add a counter of number of wrong answers / turns?
-# TODO: Filter all other columns by letters you've guessed. Example: able, guessed e, filter out anything with an e in the first three columns.
-
-
-
-
-
 
 
 
