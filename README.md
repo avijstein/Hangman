@@ -17,7 +17,7 @@ When a word is presented, the player (in this case, the computer) knows the leng
 | J       | A       | G       | U       | A       | R       |
 
 
-The computer then finds the frequency of each letter in the entire dataframe. This provides a ranking of the most common to the least common letters, and gives the computer its options. The computer guesses the most common letter, since a correct letter in any location is considered good.
+The computer then finds the frequency of each letter in the entire dataframe. This provides a ranking of the most common to the least common letters, and gives the computer its options. The computer guesses the most common letter, since a correct letter in any location is good.
 
 If the letter does NOT appear in the word, the computer eliminates all words containing the guessed letter from the dataframe. It calculates the frequency of each letter again, and then guesses again. For the example above, if the computer guesses 'K' (not the most common letter), but the word is 'JAGUAR', the computer would eliminate 'KITTEN' and 'DONKEY' and recalculate the most common letters.
 
