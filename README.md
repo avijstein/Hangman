@@ -25,6 +25,8 @@ If the letter DOES appear in the word, the computer fills it into all of its pos
 
 Having tested this approach on hundreds of words in a sample, the success rate (of guessing within 9 turns) is about 95%.
 
+Disclaimer: the dictionary I use is the one hidden deep within Unix computers. It's not a great dictionary by any stretch of the imagination, but is decent to practice on.
+
 ### Playing Hangman
 
 Having a user play the game of hangman turned out to be a little more difficult than I expected. I was able to quickly build a version where I could just run from the command line. It requested a word from the user, checked to see if the word was in the dictionary, and requested a new one if it wasn't. From there, the computer would print out the updates of the game as it solved it with no other user interaction.
