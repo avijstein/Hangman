@@ -5,7 +5,7 @@ import hangman as hm
 import pandas as pd
 
 # Change to user's cwd.
-os.chdir('/Users/ajstein/Desktop/Real Life/Coding Projects/Hangman/')
+# os.chdir('/Users/ajstein/Desktop/Real Life/Coding Projects/Hangman/')
 
 def write_new_word(word, go):
     """

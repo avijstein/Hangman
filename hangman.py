@@ -5,7 +5,7 @@ import pandas as pd
 import logging
 
 # Change to user's cwd.
-os.chdir('/Users/ajstein/Desktop/Real Life/Coding Projects/Hangman/')
+# os.chdir('/Users/ajstein/Desktop/Real Life/Coding Projects/Hangman/')
 
 def clear_log(yes_or_no):
     """
