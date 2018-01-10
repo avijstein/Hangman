@@ -132,11 +132,6 @@ def over_write(text, align, font):
         t.write(text, align = align, font = font)
     t.pencolor('black')
 
-# def discard_bin(word, num):
-
-
-
-
 def run_turtles():
     """
     Reads the log file and commands turtles to move or write based on each line of the log.
@@ -267,6 +262,10 @@ def run_turtles():
 
 
 def total_turtles(go):
+    """
+    This executes the whole function from beginning to end, starting with
+    choosing a word to displaying the GUI.
+    """
     word = input('What word would you like to choose? ')
     print('Your game is loading...')
     sys.stdout = open(os.devnull, 'w')  # disable printing
@@ -275,12 +274,16 @@ def total_turtles(go):
     t.done()
     sys.stdout = sys.__stdout__  # enable printing
 
-# total_turtles('go')
 
-write_new_word('butterfly', 'go')
+# Useful for testing sections
+# write_new_word('butterfly', 'go away')
+# run_turtles()
+# t.done()
 
-run_turtles()
-t.done()
+
+total_turtles('go')
+
+
 
 
 
