@@ -42,6 +42,6 @@ Once the turtle script was reading data smoothly and graphing things in the righ
 ![GUI Game](Images/GUI_game.png)
 
 
-
+**Note:** While the `hangman.py` and `master_dict.txt` files are needed, the only code to run is `turtle_gui.py`.
 
 <!-- bottom -->
