@@ -1,6 +1,5 @@
 import os, sys, random
 from time import sleep
-import numpy as np
 import pandas as pd
 import logging
 
