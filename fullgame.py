@@ -22,22 +22,6 @@ def reading():
     all_words['words'] = all_words['words'].str.lower().drop_duplicates()
     return(all_words)
 
-def friendly():
-    """
-    Initializing the game, asking for user input and checking if it's a real word.
-    Tries the input again if it's not in the dictionary.
-    """
-    print('---- Initializing Game ----')
-    target_word = input('What word would you like to choose? ')
-    while True:
-        if (target_word not in all_words['words'].values):
-            print("That's not a valid word, please try another.")
-            target_word = input('What word would you like to choose? ')
-        else:
-            break
-    print("Your word is ", target_word.upper(), ", but the computer doesn't know that.", sep='')
-    return(target_word)
-
 def unfriendly(target_word):
     """
     Initializing the game, receives input rather than asking for it.
@@ -49,9 +33,7 @@ def unfriendly(target_word):
         print("That's not a valid word, please try another and start again.")
         logging.info("That's not a valid word, please try another and start again.")
         sys.exit()
-    print('---- Initializing Game ----')
     logging.info('---- Initializing Game ----')
-    print("Your word is ", target_word.upper(), ", but the computer doesn't know that.", sep='')
     logging.info("Your word is " + str(target_word.upper()) + ", but the computer doesn't know that.")
     return(target_word)
 
@@ -63,7 +45,6 @@ def game_setup():
     global guessed_letters, wrongs, all_words, target_word, current_word
     guessed_letters, wrongs = [], 0
     current_word = list('-'*len(target_word))
-    print('Current word: ', ''.join(current_word))
     logging.info('Current word: ' + str(''.join(current_word)))
     all_words = all_words.loc[all_words['words'].str.len() == len(target_word)]
     possible_words = all_words['words'].apply(lambda x: pd.Series(list(x)))
@@ -78,11 +59,8 @@ def play_game(df):
     logging.info('dict_size: ' + str(len(df)))
     # testing winning scenarios.
     if (''.join(current_word) == ''.join(target_word)):
-        print('Success! Only took ', len(guessed_letters), ' turns with ', wrongs, ' wrong guesses!', sep = '')
-        print('Final word: ', (''.join(current_word)).upper())
         logging.info('Success! Only took ' + str(len(guessed_letters)) + ' turns with ' + str(wrongs) + ' wrong guesses!')
         logging.info('Final word: ' + str((''.join(current_word)).upper()))
-        # sys.exit()
         kill_switch = 1
         return
 
@@ -92,31 +70,23 @@ def play_game(df):
     new_df = df.apply(pd.value_counts).fillna(0)
     new_df['total'] = new_df.sum(axis = 1)
     new_df = new_df.sort_values(by = 'total', ascending = False)
-    # print('all options: ', list(new_df['total'].index))
     options = new_df['total'].index
     options = options[~options.isin(guessed_letters)]
-    # print('options: ', list(options)[0:5])
     logging.info('Best Options: ' + str(list(options)[0:5]))
-    # print('guessed letters: ', guessed_letters)
     guess = options[0]
     guessed_letters.append(guess)
     logging.info('Guessed Letter: ' + str(guess))
-    # print('my guess: ', guess)
 
     # checks the guess to see if it's correct (and where it is in the word).
     positions = [x for x, char in enumerate(target_word) if char == guess]
-    # print('positions: ', positions)
     if positions == []:
         wrongs += 1
         logging.info('wrongs: ' + str(wrongs))
          # testing losing scenarios.
         if wrongs > 100:
-            print('Failed! The computer guessed wrong 100 times.')
-            print(''.join(current_word))
             logging.info('Failed! The computer guessed wrong 100 times.')
             logging.info(str(''.join(current_word)))
             sys.exit()
-        # print('Wrong guess. So far: ', wrongs)
         sleep(.3)
 
         # If a letter isn't in the target word, remove all words containing that letter.
@@ -130,7 +100,6 @@ def play_game(df):
     for i in positions:
         current_word[i] = guess
         df = df.loc[df[i] == guess]
-    print('Current word: ', ''.join(current_word))
     logging.info('Current word: ' + str(''.join(current_word)))
     sleep(.5)
     return(df)
@@ -147,7 +116,6 @@ def gogogo():
         logging.info('turns: ' + str(n))
         possible_words = play_game(possible_words)
 
-
 def load_game(my_word):
     """
     Loads all variables needed for the game when run from another script.
@@ -159,16 +127,6 @@ def load_game(my_word):
     print('The game is fully loaded.')
     # logging.info('The game is fully loaded.')
 
-def fullgameplay():
-    """
-    Runs full game when operated from the command line.
-    """
-    global guessed_letters, wrongs, all_words, target_word, current_word, possible_words
-    all_words = reading()
-    target_word = friendly()
-    possible_words = game_setup()
-    gogogo()
-
 def write_new_word(word, go):
     """
     Clears the comm.log and loads a game on the turtle_gui side.
@@ -176,7 +134,6 @@ def write_new_word(word, go):
     """
     clear_log(True)
     load_game(word)
-    print('-'*20)
     gogogo()
     if go != 'go':
         sys.exit()
@@ -442,7 +399,6 @@ def total_turtles(go):
 # Otherwise, it only loads functions.
 if __name__ == '__main__':
     total_turtles('go')
-
 
 
 
